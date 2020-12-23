@@ -24,6 +24,7 @@ Route::get('/user/favorites', [UserController::class, 'getFavorites']);
 Route::post('/user/favorite', [UserController::class, 'addFavorite']);
 Route::get('/user/appointments', [UserController::class, 'getAppointments']);
 
+Route::get('/random', [BarberController::class, 'createRandom']);
 Route::get('/barbers', [BarberController::class, 'list']);
 Route::get('/barber/{id}', [BarberController::class, 'one']);
 Route::post('/barber/{id}/appointment', [BarberController::class, 'setAppointment']);
