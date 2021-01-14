@@ -24,7 +24,7 @@ Route::get('/user/favorites', [UserController::class, 'getFavorites']);
 Route::post('/user/favorite', [UserController::class, 'addFavorite']);
 Route::get('/user/appointments', [UserController::class, 'getAppointments']);
 
-Route::get('/random', [BarberController::class, 'createRandom']); // @param: token
+//Route::get('/random', [BarberController::class, 'createRandom']); // @param: token (foi utilizado somente para popular base e auxiliar no restante do desenvolvimento)
 Route::get('/barbers', [BarberController::class, 'list']);
 Route::get('/barber/{id}', [BarberController::class, 'one']);
 Route::post('/barber/{id}/appointment', [BarberController::class, 'setAppointment']);
