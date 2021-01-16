@@ -96,6 +96,7 @@ class BarberController extends Controller
 
     private function searchGeo($address)
     {
+        // Não foi cadastrado faturamento no projeto DevBarber do Google Cloud Project portanto a geolocalização não está funcional
         $key = env('MAPS_KEY', null);
         $address = urlencode($address);
         $url = 'https://maps.googleapis.com/maps/api/geocode/json?address='.$address.'&key='.$key;
@@ -114,6 +115,7 @@ class BarberController extends Controller
         $lat = $request->input('lat');
         $lng = $request->input('lng');
         $city = $request->input('city');
+        $offset = empty($request->input('offset')) ? 0 : $request->input('offset');
 
         /*
          * Na listagem dos barbeiros será calculado a distância de acordo com a localização do barbeiro
@@ -122,18 +124,17 @@ class BarberController extends Controller
          * Obs: Em caso de erro será usado a localização da cidade de São Paulo como default.
          */
 
-        if(!empty($city)) {
-            $res = $this->searchGeo($city);
+        if(!empty($city) && $res = $this->searchGeo($city)) {
             if(count($res['results'])>0) {
                 $lat = $res['results'][0]['geometry']['location']['lat'];
                 $lng = $res['results'][0]['geometry']['location']['lng'];
             }
-        } elseif (!empty($lat) && !empty($lng)) {
-            $res = $this->searchGeo($lat.','.$lng);
+        } elseif (!empty($lat) && !empty($lng) && $res = $this->searchGeo($lat.','.$lng)) {
             if(count($res['results'])>0) {
                 $city = $res['results'][0]['formatted_address'];
             }
         } else {
+            $array['error'] = 'Não foi consultado a localidade, "São Paulo" definido como default';
             $lat = '-23.5630907';
             $lng = '-46.6682795';
             $city = 'São Paulo';
@@ -144,6 +145,8 @@ class BarberController extends Controller
             POW(69.1 * ('.$lng.' - longitude) * COS(latitude / 57.3), 2)) as distance'))
             ->havingRaw('distance < ?', [10])
             ->orderBy('distance', 'ASC')
+            ->offset($offset)
+            ->limit(5)
             ->get();
 
         foreach($barbers as $bkey => $bvalue){
