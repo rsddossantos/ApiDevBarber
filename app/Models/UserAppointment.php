@@ -9,6 +9,6 @@ class UserAppointment extends Model
 {
     use HasFactory;
 
-    protected $table = 'userappointment';
+    protected $table = 'userappointments';
     public $timestamps = false;
 }
