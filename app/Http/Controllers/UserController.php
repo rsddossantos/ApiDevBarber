@@ -5,7 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\UserFavorite;
+use App\Models\UserAppointment;
+use App\Models\Barber;
+use App\Models\BarberServices;
 use Illuminate\Support\Facades\Validator;
+use Intervention\Image\Facades\Image;
 
 class UserController extends Controller
 {
@@ -23,6 +28,79 @@ class UserController extends Controller
         $info = $this->loggedUser;
         $info['avatar'] = url('media/avatars/'.$info['avatar']);
         $array['data'] = $info;
+        return $array;
+    }
+
+    public function toggleFavorite(Request $request)
+    {
+        $array = ['error' => ''];
+
+        $barber = $request->input('barber');
+        $barberExist = Barber::find($barber);
+        if($barberExist) {
+            $fav = UserFavorite::select()
+                ->where('id_user', $this->loggedUser->id)
+                ->where('id_barber', $barber)
+                ->first();
+            if($fav) {
+                $fav->delete();
+                $array['have'] = false;
+            } else {
+                //Adicionando favorito
+                $newFav = new UserFavorite();
+                $newFav->id_user = $this->loggedUser->id;
+                $newFav->id_barber = $barber;
+                $newFav->save();
+                $array['have'] = true;
+            }
+        } else {
+            $array['error'] = 'Barbeiro inexistente!';
+        }
+        return $array;
+    }
+
+    public function getFavorites()
+    {
+        $array = ['error' => '', 'list' =>[]];
+        $favs = UserFavorite::select()
+            ->where('id_user', $this->loggedUser->id)
+            ->get();
+        return $array['dados'] = $favs;die();
+        if($favs) {
+            foreach($favs as $fav) {
+                // Buscando as informações de cada barbeiro favorito do usuário
+                $barber = Barber::find($fav['id_barber']);
+                $barber['avatar'] = url('media/avatars/'.$barber['avatar']);
+                $array['list'][] = $barber;
+            }
+        }
+        return $array;
+    }
+
+    public function getAppointments()
+    {
+        $array = ['error' => '', 'list' => []];
+
+        $apps = UserAppointment::select()
+            ->where('id_user', $this->loggedUser->id)
+            ->orderBy('ap_datetime', 'DESC')
+            ->get();
+        if($apps) {
+            foreach($apps as $app) {
+                $barber = Barber::find($app['id_barber']);
+                $barber['avatar'] = url('media/avatars/'.$barber['avatar']);
+
+                $service = BarberServices::find($app['id_service']);
+
+                $array['list'][] = [
+                    'id' => $app['id'],
+                    'datetime' => $app['ap_datetime'],
+                    'barber' => $barber,
+                    'service' => $service
+                ];
+            }
+        }
+
         return $array;
     }
 
@@ -60,4 +138,33 @@ class UserController extends Controller
         $array['data'] = $data;
         return $array;
     }
+
+    public function updateAvatar(Request $request)
+    {
+        $array = ['error' => ''];
+
+        $rules = [
+            'avatar' => 'required|image|mimes:png,jpg,jpeg'
+        ];
+        $validator = Validator::make($request->all(), $rules);
+        if($validator->fails()) {
+            $array['error'] = $validator->messages();
+            return $array;
+        }
+        $avatar = $request->file('avatar');
+
+        $dest = public_path('/media/avatars');
+        $avatarName = md5(time().rand(0,9999)).'.jpg';
+
+        $img = Image::make($avatar->getRealPath());
+        $img->fit(300, 300)->save($dest.'/'.$avatarName);
+
+        $user = User::find($this->loggedUser->id);
+        $user->avatar = $avatarName;
+        $user->save();
+
+        return $array;
+    }
+
+
 }

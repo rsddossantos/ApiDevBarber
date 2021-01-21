@@ -20,13 +20,15 @@ Route::post('/user', [AuthController::class, 'create']); // @param: name, email,
 
 Route::get('/user', [UserController::class, 'read'])->name('read'); // @param: token
 Route::put('/user', [UserController::class, 'update']); // @param: token, name e/ou email e/ou password e password_confirm
-Route::get('/user/favorites', [UserController::class, 'getFavorites']);
-Route::post('/user/favorite', [UserController::class, 'addFavorite']);
+Route::post('user/avatar', [UserController::class, 'updateAvatar']); // @param: token,avatar(avatar = arquivo de imagem)
+Route::get('/user/favorites', [UserController::class, 'getFavorites']); // @param: token
+Route::post('/user/favorite', [UserController::class, 'toggleFavorite']); // @param: token,barber
 Route::get('/user/appointments', [UserController::class, 'getAppointments']);
 
 //Route::get('/random', [BarberController::class, 'createRandom']); // @param: token (foi utilizado somente para popular base e auxiliar no restante do desenvolvimento)
 Route::get('/barbers', [BarberController::class, 'list']); // @param: token
 Route::get('/barber/{id}', [BarberController::class, 'one']); // @param: token
 Route::post('/barber/{id}/appointment', [BarberController::class, 'setAppointment']); // $param:  service, year, month, day, hour
-Route::get('/search', [BarberController::class, 'search']);
-Route::get('/barber/{id}', [BarberController::class, 'one']);
+
+Route::get('/search', [BarberController::class, 'search']); // @param: token, q(query = nome ou parte do nome do barbeiro para a busca)
+
