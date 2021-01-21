@@ -23,7 +23,7 @@ Route::put('/user', [UserController::class, 'update']); // @param: token, name e
 Route::post('user/avatar', [UserController::class, 'updateAvatar']); // @param: token,avatar(avatar = arquivo de imagem)
 Route::get('/user/favorites', [UserController::class, 'getFavorites']); // @param: token
 Route::post('/user/favorite', [UserController::class, 'toggleFavorite']); // @param: token,barber
-Route::get('/user/appointments', [UserController::class, 'getAppointments']);
+Route::get('/user/appointments', [UserController::class, 'getAppointments']); // @param: token
 
 //Route::get('/random', [BarberController::class, 'createRandom']); // @param: token (foi utilizado somente para popular base e auxiliar no restante do desenvolvimento)
 Route::get('/barbers', [BarberController::class, 'list']); // @param: token
