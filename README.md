@@ -1,6 +1,6 @@
 # API Dev Barber
 
-####API com controle de usuários que irá localizar barbeiros de acordo com posição geográfica e possibilitar agendamento de serviços, listagens, favoritar barbeiros, etc.
+#### API com controle de usuários que irá localizar barbeiros de acordo com posição geográfica e possibilitar agendamento de serviços, listagens, favoritar barbeiros, etc.
 
 - API em Laravel v.8 utilizando autenticação JWT
 - Utilizar o arquivo .ENV enviado pois contém chaves de acesso.
